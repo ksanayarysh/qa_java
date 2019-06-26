@@ -1,13 +1,14 @@
 package lesson1.grafana;
 
-import org.influxdb.dto.Point;
+import lesson1.grafana.listeners.ConsoleSender;
+import lesson1.grafana.listeners.IMyTestResult;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 
-import java.util.concurrent.TimeUnit;
-
 public class ExecutionListener implements ITestListener {
+
+    public static IMyTestResult iMyTestResult;
 
     public void onTestStart(ITestResult iTestResult) {
 
@@ -38,27 +39,11 @@ public class ExecutionListener implements ITestListener {
     }
 
     private void sendTestMethodStatus(ITestResult iTestResult, String status) {
-        Point point = Point.measurement("testmethod")
-                .time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
-                .tag("testclass", iTestResult.getTestClass().getName())
-                .tag("name", iTestResult.getName())
-                .tag("description", iTestResult.getMethod().getDescription())
-                .tag("groups", iTestResult.getMethod().getGroups()[0])
-                .tag("result", status)
-                .addField("duration", (iTestResult.getEndMillis() - iTestResult.getStartMillis()))
-                .addField("result", status)
-                .addField("groups", iTestResult.getMethod().getGroups()[0])
-                .build();
-        ResultSender.send(point);
+        iMyTestResult.sendTestMethodStatus(iTestResult, status);
     }
 
     private void sendTestClassStatus(ITestContext iTestContext) {
-        Point point = Point.measurement("testclass")
-                .time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
-                .tag("name", iTestContext.getAllTestMethods()[0].getTestClass().getName())
-                .addField("duration", (iTestContext.getEndDate().getTime() - iTestContext.getStartDate().getTime()))
-                .build();
-        ResultSender.send(point);
+        iMyTestResult.sendTestClassStatus(iTestContext);
     }
 
 }

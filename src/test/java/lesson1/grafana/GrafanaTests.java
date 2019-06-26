@@ -1,5 +1,7 @@
 package lesson1.grafana;
 
+import lesson1.grafana.listeners.ConsoleSender;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
@@ -7,6 +9,11 @@ import static java.lang.Thread.sleep;
 
 @Listeners({ExecutionListener.class})
 public class GrafanaTests {
+
+    @BeforeSuite
+    public void initLog(){
+        ExecutionListener.iMyTestResult = new ConsoleSender();
+    }
 
     public void doSleep() throws InterruptedException {
         sleep((int) (Math.random() * 20000));
